@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Example for transformation of comma separated list of values into a CloudFormation list
+Parameters: 
+  VPC:
+    Description: Security group VPC id
+    Type: AWS::EC2::VPC::Id
+  SecurityGroupIngressIPs:
+    Type: String
+    Description: Comma separated list of IPs
+    Default: 10.0.0.60, 10.0.0.61
+Resources: 
+  secGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Demonstrating comma separated list of values transformation
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        'Fn::Transform':
+            - Name: 'StringListTemplate'
+              Parameters:
+                Parameter: SecurityGroupIngressIPs
+                TemplateYaml: |
+                  IpProtocol: "tcp"
+                  FromPort: 22
+                  ToPort: 22
+                  CidrIp: "#VALUE#/32"
